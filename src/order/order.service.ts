@@ -48,19 +48,60 @@ export class OrderService {
     }
   }
 
-  // TODO: 구조화 할 수 있는 방법은?
-  async withRepositoryTransaction() {
-    this.dataSource.transaction(async (manager) => {
-      const UserRepository = this.dataSource.getRepository(User).extend(UserRepositoryExtends)
-      const PostRepository = this.dataSource.getRepository(Post).extend(PostRepositoryExtends)
 
+  async withRepositoryTransactionExtend() {
+    const rst = await this.dataSource.transaction<string>(async (manager) => {
+      const UserRepository = this.dataSource
+        .getRepository(User)
+        .extend(UserRepositoryExtends);
+      const PostRepository = this.dataSource
+        .getRepository(Post)
+        .extend(PostRepositoryExtends);
       const userRepository = manager.withRepository(UserRepository);
       const postRepository = manager.withRepository(PostRepository);
+
       await userRepository.createUser();
       await userRepository.createUser();
       await userRepository.createUser();
       await postRepository.createPost();
+
+      return await 'hello world';
     });
- 
+
+    return rst;
+  }
+  async withRepositoryTransactionRepository() {
+    const rst = await this.dataSource.transaction<string>(async (manager) => {
+      const userRepository = manager.withRepository(this.userRepository);
+      const postRepository = manager.withRepository(this.postRepository);
+
+      await userRepository.createUser();
+      await userRepository.createUser();
+      await userRepository.createUser();
+      await postRepository.createPost();
+
+      return await 'hello world';
+    });
+
+    return rst;
+  }
+
+  
+  async withRepositoryTransactionPromise() {
+    const manager = await this.getTransactionManager(); // 해당 함수가 종료될 때 connection이 닫힘
+    const userRepository = manager.withRepository(this.userRepository);
+    const postRepository = manager.withRepository(this.postRepository);
+
+    await userRepository.createUser(); // 에러발생
+
+    return 'hello world';
+  }
+
+  async getTransactionManager(): Promise<EntityManager> {
+    return new Promise((resolve, reject) => {
+      this.dataSource.transaction(async (manager) => {
+        resolve(manager);
+      });
+    });
   }
 }
