@@ -1,21 +1,24 @@
 import { DataSource } from 'typeorm';
+import { ConfigService } from '@nestjs/config';
+import { join } from 'path';
 
 export const databaseProviders = [
   {
     provide: 'DATABASE_SOURCE',
-    useFactory: async () => {
+    inject: [ConfigService],
+    useFactory: (configService: ConfigService) => {
       const dataSource = new DataSource({
+        host: configService.get('database.host'),
+        username: configService.get('database.user'),
+        port: configService.get('database.port'),
         type: 'mysql',
-        host: 'localhost',
-        port: 3306,
-        username: 'root',
-        password: 'password',
-        database: 'savle',
+        password: configService.get('database.password'),
+        database: configService.get('database.database'),
         entities: [
-            __dirname + '/../**/*.entity{.ts,.js}',
+          join(__dirname, '/../**/*.entity{.ts,.js}'),
         ],
-        synchronize: true,
-        logging: true,
+        synchronize: configService.get('database.synchronize'),
+        logging: configService.get('database.logging'),
       });
 
       return dataSource.initialize();

@@ -7,6 +7,7 @@ export class OrderController {
     private orderService: OrderService,
   ) {}
 
+  // 각각의 repository에서 save호출
   @Get()
   createOrder() {
     return this.orderService.createOrder();
@@ -17,8 +18,22 @@ export class OrderController {
     return this.orderService.queryRunnerCreateOrder();
   }
 
+  // dataSource.transaction의 withRepository(extend Repository) 이용
+  @Get('transaction/with-extend')
+  withRepositoryTransactionExtend() {
+    return this.orderService.withRepositoryTransactionExtend();
+  }
+
+  // dataSource.transaction의 withRepository(Custom Repository) 이용
   @Get('transaction/with-repository')
-  withRepositoryTransaction() {
-    return this.orderService.withRepositoryTransaction();
+  withRepositoryTransactionRepository() {
+    return this.orderService.withRepositoryTransactionRepository();
+  }
+
+  // await dataSource.transaction의 withRepository(Custom Repository) 이용
+  // 정상적으로 처리되지 않음
+  @Get('transaction/with-repository/promise')
+  withRepositoryTransactionPromise() {
+    return this.orderService.withRepositoryTransactionPromise();
   }
 }

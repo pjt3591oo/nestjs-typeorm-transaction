@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { Post } from "src/entity/post.entity";
 import { User } from "src/entity/user.entity";
-import { DataSource } from "typeorm";
+import { DataSource, EntityManager } from "typeorm";
 import { PostRepository, PostRepositoryExtends } from "./repository/post.repository";
 import { UserRepository, UserRepositoryExtends } from "./repository/user.repository";
 
@@ -86,7 +86,7 @@ export class OrderService {
     return rst;
   }
 
-  
+  // 정상적으로 동작하지 않음
   async withRepositoryTransactionPromise() {
     const manager = await this.getTransactionManager(); // 해당 함수가 종료될 때 connection이 닫힘
     const userRepository = manager.withRepository(this.userRepository);
