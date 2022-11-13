@@ -1,5 +1,5 @@
 import { DynamicModule, Provider } from "@nestjs/common";
-import { getDataSourceToken, TypeOrmModule } from "@nestjs/typeorm";
+import { getDataSourceToken } from "@nestjs/typeorm";
 import { DataSource } from "typeorm";
 import { TYPEORM_EX_CUSTOM_REPOSITORY } from "./repository.decorator";
 
@@ -13,7 +13,6 @@ export class RepositoryModule {
       if (!entity) {
         continue;
       }
- 
       providers.push({
         inject: [getDataSourceToken()],
         provide: repository,

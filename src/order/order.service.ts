@@ -70,8 +70,10 @@ export class OrderService {
 
     return rst;
   }
+
   async withRepositoryTransactionRepository() {
     const rst = await this.dataSource.transaction<string>(async (manager) => {
+
       const userRepository = manager.withRepository(this.userRepository);
       const postRepository = manager.withRepository(this.postRepository);
 
@@ -82,7 +84,8 @@ export class OrderService {
 
       return await 'hello world';
     });
-
+    console.log(rst)
+    
     return rst;
   }
 
@@ -90,16 +93,16 @@ export class OrderService {
   async withRepositoryTransactionPromise() {
     const manager = await this.getTransactionManager(); // 해당 함수가 종료될 때 connection이 닫힘
     const userRepository = manager.withRepository(this.userRepository);
-    const postRepository = manager.withRepository(this.postRepository);
 
-    await userRepository.createUser(); // 에러발생
-
+    // await userRepository.createUser(); // 에러발생
+    console.log('end')
     return 'hello world';
   }
 
   async getTransactionManager(): Promise<EntityManager> {
     return new Promise((resolve, reject) => {
       this.dataSource.transaction(async (manager) => {
+
         resolve(manager);
       });
     });

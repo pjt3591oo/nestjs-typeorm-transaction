@@ -3,7 +3,6 @@ import { ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { join } from 'path';
 
-import { databaseProviders } from './database.providers';
 
 @Module({
   imports: [
@@ -26,7 +25,5 @@ import { databaseProviders } from './database.providers';
       },
     }),
   ],
-  providers: [...databaseProviders],
-  exports: [...databaseProviders],
 })
 export class DatabaseModule { }
