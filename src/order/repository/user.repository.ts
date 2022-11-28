@@ -18,12 +18,12 @@ export class UserRepository extends Repository<User> {
   }
 }
 
-export const  UserRepositoryExtends = {
+export const UserRepositoryExtends = {
   createUser() {
     return this.save({
       firstName: new Date().getTime().toString(),
       lastName: new Date().getTime().toString(),
       age: Math.random() * 100,
-    })
+    });
   },
-}
+};

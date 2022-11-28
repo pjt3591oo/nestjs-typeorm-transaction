@@ -1,9 +1,15 @@
-import { Injectable } from "@nestjs/common";
-import { Post } from "src/entity/post.entity";
-import { User } from "src/entity/user.entity";
-import { DataSource, EntityManager } from "typeorm";
-import { PostRepository, PostRepositoryExtends } from "./repository/post.repository";
-import { UserRepository, UserRepositoryExtends } from "./repository/user.repository";
+import { Injectable } from '@nestjs/common';
+import { Post } from 'src/entity/post.entity';
+import { User } from 'src/entity/user.entity';
+import { DataSource, EntityManager } from 'typeorm';
+import {
+  PostRepository,
+  PostRepositoryExtends,
+} from './repository/post.repository';
+import {
+  UserRepository,
+  UserRepositoryExtends,
+} from './repository/user.repository';
 
 @Injectable()
 export class OrderService {
@@ -11,18 +17,18 @@ export class OrderService {
     private userRepository: UserRepository,
     private postRepository: PostRepository,
     private dataSource: DataSource,
-  ){}
+  ) {}
 
   // 각각의 repository에서 save가 호출될 때 개별적으로 트랜잭션이 만들어 짐
-  async createOrder(): Promise<any>{
+  async createOrder(): Promise<any> {
     const users = await this.userRepository.createUser();
     const posts = await this.postRepository.createPost();
-    return { users, posts};
+    return { users, posts };
   }
 
   // 하나의 트랜잭션으로 처리할 수 있지만 먼가 복잡하다...
   async queryRunnerCreateOrder(): Promise<any> {
-    const queryRunner = await this.dataSource.createQueryRunner()
+    const queryRunner = await this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
 
@@ -31,23 +37,22 @@ export class OrderService {
       user.firstName = new Date().getTime().toString();
       user.lastName = new Date().getTime().toString();
       user.age = Math.random() * 100;
-      await queryRunner.manager.save(user)
+      await queryRunner.manager.save(user);
 
       const post = new Post();
-      post.title = new Date().getTime().toString()
+      post.title = new Date().getTime().toString();
       post.user = user;
       await queryRunner.manager.save(post);
 
       await queryRunner.commitTransaction();
       return '';
-    } catch(error) {
+    } catch (error) {
       await queryRunner.rollbackTransaction();
       throw new Error('Transaction failed');
     } finally {
       await queryRunner.release();
     }
   }
-
 
   async withRepositoryTransactionExtend() {
     const rst = await this.dataSource.transaction<string>(async (manager) => {
@@ -73,7 +78,6 @@ export class OrderService {
 
   async withRepositoryTransactionRepository() {
     const rst = await this.dataSource.transaction<string>(async (manager) => {
-
       const userRepository = manager.withRepository(this.userRepository);
       const postRepository = manager.withRepository(this.postRepository);
 
@@ -84,8 +88,9 @@ export class OrderService {
 
       return await 'hello world';
     });
-    console.log(rst)
-    
+
+    console.log(rst);
+
     return rst;
   }
 
@@ -95,14 +100,13 @@ export class OrderService {
     const userRepository = manager.withRepository(this.userRepository);
 
     // await userRepository.createUser(); // 에러발생
-    console.log('end')
+    console.log('end');
     return 'hello world';
   }
 
   async getTransactionManager(): Promise<EntityManager> {
     return new Promise((resolve, reject) => {
       this.dataSource.transaction(async (manager) => {
-
         resolve(manager);
       });
     });
